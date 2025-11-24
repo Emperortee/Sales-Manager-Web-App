@@ -5,9 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { IoIosAdd } from "react-icons/io";
 import { ModeToggle } from "../ModeToggle";
+import { Dispatch, SetStateAction } from "react";
 
-
-export default function Navbar() {
+export default function Navbar({
+  setSearchQuery,
+  searchQuery,
+}: {
+  searchQuery:string;
+  setSearchQuery: Dispatch<SetStateAction<string>>;
+}) {
   return (
     <div
       className="relative w-full h-20 overflow-hidden
@@ -25,7 +31,12 @@ export default function Navbar() {
 
       <div className="flex gap-3 items-center">
         <div className="flex items-center gap-3 max-sm:w-[250px] relative">
-          <Input placeholder="search..." className="h-10 rounded-lg" />
+          <Input
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)} 
+          placeholder="search..." 
+          className="h-10 rounded-lg" 
+          />
           <div className="absolute right-[6px] h-[31px]">
             <Button className="h-8">
               <IoIosAdd className="text-3xl" />
