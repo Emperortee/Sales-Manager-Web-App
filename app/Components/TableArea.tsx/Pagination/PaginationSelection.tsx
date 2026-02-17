@@ -5,23 +5,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PaginationType } from "../TableArea";
+import { Dispatch, SetStateAction } from "react";
 
-export default function PaginationSelection() {
-  return (
-    <div className="flex items-center gap-2 max-sm:flex-col">
-      <span className="text-sm text-gray-500">Rows Per Page</span>
-      <Select>
-        <SelectTrigger className="w-[90px]">
-          <SelectValue placeholder="5" />
-        </SelectTrigger>
-        <SelectContent>
-          {[5, 10, 15, 20, 30].map((size) => (
+export default function PaginationSelection({
+  pagination,
+  setPagination,
+}: {
+  pagination: PaginationType;
+  setPagination: Dispatch<SetStateAction<PaginationType>>;
+}) {
+ return (
+  <div className="flex items-center gap-3">
+    <div className="Sizes-gray-500 text-sm">Rows per page:</div>
+    <Select
+      value={pagination.pageSize.toString()}
+      onValueChange={(value) =>
+        setPagination((prev) => ({
+          ...prev,
+          pageSize: Number(value),
+        }))
+      }
+    >
+      <SelectTrigger className="border rounded-md px-2 w-14">
+        <SelectValue placeholder={pagination.pageSize.toString()} />
+      </SelectTrigger>
+      <SelectContent>
+          {[4, 6, 8, 10, 15, 20, 30].map((size) => (
             <SelectItem key={size} value={size.toString()}>
               {size}
             </SelectItem>
           ))}
-        </SelectContent>
-      </Select>
-    </div>
-  );
+       
+      </SelectContent>
+    </Select>
+  </div>
+);
 }

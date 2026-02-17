@@ -9,6 +9,7 @@ import PaginationArea from "./Pagination/PaginationArea";
 import { salesColumns } from "./SalesColumn";
 // import { SalesTable } from "./SalesTable";
 import { salesData } from "@/app/sales-data";
+import { useSalesStore } from "@/app/useSaleStore";
 
 import {
   //ColumnDef,
@@ -17,7 +18,10 @@ import {
   useReactTable,
   ColumnFiltersState,
   getFilteredRowModel,
-} from "@tanstack/react-table"; // 52.7s (gzipped: 13.2k)
+  SortingState,
+  getSortedRowModel,
+  getPaginationRowModel,
+} from "@tanstack/react-table"; 
 
 import {
   Table,
@@ -28,45 +32,64 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+export interface PaginationType {
+  pageIndex: number;
+  pageSize:number;
+}
+
 export default function TableArea({ searchQuery }: { searchQuery: string }) {
+  const { allSales, loadAllSales } = useSalesStore();
   const tabItems = [
-    { value: "all", label: "All Deals", count: salesData.length },
+    { value: "all", label: "All Deals", count: allSales.length },
     { 
         value: "high", 
         label: "High Priority", 
-        count: salesData.filter((d) => d.priority === "High").length,
+        count: allSales.filter((d) => d.priority === "High").length,
     },
     { 
         value: "medium", 
         label: "Medium Priority", 
-        count: salesData.filter((d) => d.priority === "Medium").length,
+        count: allSales.filter((d) => d.priority === "Medium").length,
     },
     { 
         value: "low", 
         label: "Low Priority", 
-        count: salesData.filter((d) => d.priority === "Low").length,
+        count: allSales.filter((d) => d.priority === "Low").length,
     },
   ];
 
   const [activeTab, setActiveTab] = useState("all");
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting,setSorting] = useState<SortingState>([]);
+  const [pagination, setPagination] = useState<PaginationType>({
+    pageIndex: 0,
+    pageSize: 8,
+  });
+
+  useEffect(() => {
+  loadAllSales();
+}, []);
 
 // Filter data based on the active tab
 const filteredData = useMemo(() => {
-  if (activeTab === "all") return salesData;
-  return salesData.filter(
+  if (activeTab === "all") return allSales;
+  return allSales.filter(
     (data) => data.priority.toLowerCase() === activeTab
   );
-}, [activeTab]);
+}, [activeTab, allSales]);
 
 const table = useReactTable({
   data: filteredData,
   columns: salesColumns,
   getCoreRowModel: getCoreRowModel(),
-
+  onSortingChange: setSorting,
+  getSortedRowModel: getSortedRowModel(),
   onColumnFiltersChange: setColumnFilters,
   getFilteredRowModel: getFilteredRowModel(),
+  getPaginationRowModel: getPaginationRowModel(),
   state: {
+    pagination,
+    sorting,
     columnFilters,
   },
 });
@@ -92,7 +115,7 @@ useEffect(() => {
                   value={tab.value}
                   className="flex items-center gap-2 h-8 rounded-md transition-all ${
                     activeTab === tab.value
-                      ? 'bg-primary text-white max-sm:w-full'
+                      ? 'bg-primary text-black max-sm:w-full'
                       : 'text-gray-600'
                   }"
                   onClick={() => setActiveTab(tab.value)}
@@ -184,7 +207,10 @@ useEffect(() => {
         </Tabs>
       </div>
       {/* pagination area */}
-      <PaginationArea/>
+      <PaginationArea
+      table={table}
+      pagination={pagination}
+      setPagination={setPagination}/>
     </Card>
   );
 }

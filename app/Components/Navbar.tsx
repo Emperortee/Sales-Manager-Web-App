@@ -1,17 +1,15 @@
 "use client"
-
 import { FaShoppingBag } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { IoIosAdd } from "react-icons/io";
 import { ModeToggle } from "../ModeToggle";
 import { Dispatch, SetStateAction } from "react";
+import SalesDialog from "../Components/DealDialog/DealDialog";
 
 export default function Navbar({
   setSearchQuery,
   searchQuery,
 }: {
-  searchQuery:string;
+  searchQuery: string;
   setSearchQuery: Dispatch<SetStateAction<string>>;
 }) {
   return (
@@ -23,29 +21,24 @@ export default function Navbar({
         <div className="size-10 bg-primary rounded-md flex justify-center items-center">
           <FaShoppingBag className="text-white text-lg" aria-hidden="true" />
         </div>
-
         <h1 className="font-semibold text-2xl max-md:hidden">
           Sales <span className="font-normal text-primary">Flow</span>
         </h1>
       </header>
-
       <div className="flex gap-3 items-center">
         <div className="flex items-center gap-3 max-sm:w-[250px] relative">
           <Input
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)} 
-          placeholder="search..." 
-          className="h-10 rounded-lg" 
+            data-testid="search-input" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="search..."
+            className="h-10 rounded-lg"
           />
           <div className="absolute right-[6px] h-[31px]">
-            <Button className="h-8">
-              <IoIosAdd className="text-3xl" />
-            </Button>
+            <SalesDialog />
           </div>
         </div>
-
-        {/* FIX — Use the real dropdown component */}
-        <ModeToggle />
+        <ModeToggle data-testid="theme-toggle" />
       </div>
     </div>
   );

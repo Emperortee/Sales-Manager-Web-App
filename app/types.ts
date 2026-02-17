@@ -1,11 +1,13 @@
-type SaleStatus = "In Progress" | "Closed" | "Negotiation" | "Pending";
-type SalesPriority = "High" | "Medium" | "Low";
+//types.ts
+export type SaleStatus = "In Progress" | "Closed" | "Negotiation" | "Pending";
+export type SalePriority = "High" | "Medium" | "Low";
 
 export type SaleType = {
+  id: string;
   customerName: string;
   dealValue: string;
   status: SaleStatus;
   contactDate: string;
   salesperson: string;
-  priority: SalesPriority;
+  priority: SalePriority;
 };

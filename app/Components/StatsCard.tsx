@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import React, { ReactNode } from "react";
 import { GrMoney } from "react-icons/gr";
 import { FaHandshake, FaChartLine } from "react-icons/fa";
+import { useSalesStore } from "../useSaleStore";
 
 type SingleCard = {
   title: string;
@@ -12,21 +13,40 @@ type SingleCard = {
 };
 
 export default function StatCards() {
+  const { allSales } = useSalesStore();
+
+   const closedSales = allSales.filter(
+    (sale) => sale.status === "Closed"
+  );
   // Array of statistics cards
   const stats : SingleCard[] = [
     {
       title: "Total Sales",
-      value: "$125,000",
+      value: allSales
+      .reduce((total, sale) => {
+        const numericValue = parseFloat(
+          sale.dealValue.replace(/[^0-9.-]+/g, "")
+        );
+        return total + numericValue;
+    }, 0)
+      .toLocaleString("en-NG", {
+        style: "currency",
+        currency: "NGN",
+      }),
       icon: <GrMoney />,
     },
     {
       title: "Deals in Progress",
-      value: "45",
+      value: allSales
+            .filter((sale) => sale.status === "In Progress")
+            .length.toString(),
       icon: <FaHandshake />,
     },
-    {
+      {
       title: "Conversion Rate",
-      value: "67%",
+     value: 
+     `${((closedSales.length / allSales.length) * 100).toFixed(2)}%` ||
+    "0.00%",
       icon: <FaChartLine />,
     },
   ];
@@ -42,18 +62,22 @@ export default function StatCards() {
 
 function SingleStatCard({ SingleCard }: { SingleCard: SingleCard }) {
   return (
-    <Card className="p-4 flex flex-col gap-2 shadow-none">
-      <div className="flex items-center justify-between">
+    <Card className="p-6 shadow-none">
+      {/* Top Row (Title + Icon at edge) */}
+      <div className="flex items-start justify-between">
         <span className="text-sm font-semibold text-slate-600">
           {SingleCard.title}
         </span>
-      </div>
-      <div className="size-7 rounded-md flex items-center justify-center text-sm bg-primary/25 font-bold text-primary">
-        {SingleCard.icon}
+
+        <div className="size-8 rounded-md flex items-center justify-center bg-primary/20 text-primary">
+          {SingleCard.icon}
+        </div>
       </div>
 
       {/* Amount */}
-      <div className="text-3xl font-bold">{SingleCard.value}</div>
+      <div className="text-3xl font-bold mt-4">
+        {SingleCard.value}
+      </div>
     </Card>
   );
 }

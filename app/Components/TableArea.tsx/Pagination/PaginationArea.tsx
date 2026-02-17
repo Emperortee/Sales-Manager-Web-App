@@ -7,9 +7,20 @@ import { BiFirstPage, BiLastPage } from "react-icons/bi";
 
 import { useTheme } from "next-themes"; 
 import  PaginationSelection from "./PaginationSelection";
-import { useEffect, useState } from "react"; 
+import { Dispatch, SetStateAction, useEffect, useState } from "react"; 
+import { Table } from "@tanstack/react-table";
+import { SaleType } from "@/app/types";
+import { PaginationType } from "../TableArea";
 
-export default function PaginationArea() {
+export default function PaginationArea({
+  table,
+  pagination,
+  setPagination,
+}: {
+  table: Table<SaleType>;
+  pagination: PaginationType;
+  setPagination: Dispatch<SetStateAction<PaginationType>>
+}) {
   const { theme } = useTheme();
   const [isClient, setIsClient] = useState(false);
 
@@ -29,17 +40,22 @@ export default function PaginationArea() {
       overflow-hidden flex justify-between items-center px-6 ${bgColor}
       border-t max-sm:flex-col max-sm:gap-2`}
     >
-      <PaginationSelection />
+      <PaginationSelection 
+      pagination={pagination}
+      setPagination={setPagination}
+      />
       <div className="flex items-center max-sm:flex-col max-sm:mt-4 max-sm:gap-2">
-        <span className="text-sm text-gray-500">Page 1 of 3</span>
+        <span className="text-sm text-gray-500">
+          Page  {pagination.pageIndex + 1} of {table.getPageCount()}
+          </span>
         <div className="flex items-center justify-end space-x-2">
           {/* First Page Button */}
           <Button
             variant="outline"
             className="size-9 w-12"
             size="sm"
-            // onClick={() => table.setPageIndex(0)}
-            // disabled={!table.getCanPreviousPage()}
+            onClick={() => table.setPageIndex(0)}
+            disabled={!table.getCanPreviousPage()}
           >
             <BiFirstPage />
           </Button>
@@ -49,8 +65,8 @@ export default function PaginationArea() {
             variant="outline"
             className="size-9 w-12"
             size="sm"
-            // onClick(() => table.previousPage()}
-            // disabled={!table.getCanPreviousPage()}
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
           >
             <GrFormPrevious />
           </Button>
@@ -60,8 +76,8 @@ export default function PaginationArea() {
             variant="outline"
             className="size-9 w-12"
             size="sm"
-            // onClick={() => table.nextPage()}
-            // disabled={!table.getCanNextPage()}
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
           >
             <GrFormNext />
           </Button>
@@ -71,8 +87,8 @@ export default function PaginationArea() {
             variant="outline"
             className="size-9 w-12"
             size="sm"
-            // onClick(() => table.setPageIndex(table.getPageCount() - 1)}
-            // disabled={!table.getCanNextPage()}
+            onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+            disabled={!table.getCanNextPage()}
           >
             <BiLastPage />
           </Button>

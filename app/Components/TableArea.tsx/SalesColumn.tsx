@@ -1,9 +1,43 @@
 import { SaleType } from "@/app/types";
-import { ColumnDef } from "@tanstack/react-table"; // 29s (gzipped: 23B)
+import { ColumnDef, Column } from "@tanstack/react-table"; 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import ActionDropdown from "@/app/Dropdowns/ActionDropDown";
 import { format } from "date-fns"; 
+import { Button } from "@/components/ui/button";
+import { LuArrowDownUp } from "react-icons/lu";
+import { IoArrowDownSharp, IoArrowUpSharp } from "react-icons/io5";
+
+
+interface SortableHeaderProps {
+  column: Column<SaleType, unknown>;
+  label: string;
+}
+function sortingIcon(isSorted: boolean | string) {
+  if (isSorted === "asc") {
+    return <IoArrowUpSharp />;
+  } else if (isSorted === "desc") {
+    return <IoArrowDownSharp />;
+  }else {
+    return <LuArrowDownUp/>;
+  }
+}
+
+
+function SortableHeader({ column, label }: SortableHeaderProps) {
+  const isSorted = column.getIsSorted();
+  
+  return (
+    <Button
+      variant="ghost"
+      className={`$(isSorted && "text-primary")`}
+      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    >
+      {label}
+      {sortingIcon(isSorted)}
+    </Button>
+  );
+}
 
 export const salesColumns: ColumnDef<SaleType>[] = [
   {
@@ -31,16 +65,21 @@ export const salesColumns: ColumnDef<SaleType>[] = [
   },
   {
     accessorKey: "customerName",
-    header: "Customer Name",
+    header: ({ column }) => {
+      return <SortableHeader column={column} label="Customer Name" />;
   },
+},
   {
     accessorKey: "dealValue",
-    header: "Deal Value",  
-    },
- 
+     header: ({ column }) => {
+      return <SortableHeader column={column} label="Deal Value" />;
+  },
+},
   {
     accessorKey: "status",
-    header: "Status",
+     header: ({ column }) => {
+      return <SortableHeader column={column} label="Status" />;
+  },
     cell: ({ row }) => {
    
       return (
@@ -56,7 +95,9 @@ export const salesColumns: ColumnDef<SaleType>[] = [
  
   {
     accessorKey: "contactDate",
-    header: "Contact Date",
+      header: ({ column }) => {
+      return <SortableHeader column={column} label="Contact Date" />;
+  },
     cell: ({ row }) => {
       const contactDate = row.original.contactDate; // Access the raw date value
       const formattedDate = contactDate
@@ -68,11 +109,15 @@ export const salesColumns: ColumnDef<SaleType>[] = [
   },
   {
     accessorKey: "salesperson",
-    header: "Salesperson",
+    header: ({ column }) => {
+      return <SortableHeader column={column} label="Sales Person" />;
   },
+},
   {
     accessorKey: "priority",
-    header: "Priority",
+       header: ({ column }) => {
+      return <SortableHeader column={column} label="Priority" />;
+  },
     cell: ({ row }) => {
       const priority = row.original.priority; // Get the priority from the row data
       let priorityColor = "";
